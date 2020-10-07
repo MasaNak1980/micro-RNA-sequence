@@ -1,0 +1,22 @@
+dataを保存するDirectoryを作成
+$ mkdir /Volumes/xxxx/expression/seq
+$ cd /Volumes/xxxx/expression/seq
+
+　GSE47602 から
+Metadata という名前に変わっている。　ダウンロード　ダウンロードファイルに落ちるので、こぴぺ
+Accestion listも一緒にダウンロード　まとめて、SRAfile をダウンロードできる。　
+以下のコマンドで自動的にダウンロード
+cat SRR_Acc_List.txt | while read line; do cmd="fasterq-dump --split-files ${line}; gzip ${line}*fastq"; eval ${cmd}; done
+miR のreffernece と　annotation
+ftp://mirbase.org/pub/mirbase/CURRENT/から　1　mature.fa.gz　2　hairpin.fa.gzをdownloads
+
+Software installation
+sra-toolkits (https://github.com/ncbi/sra-tools); already done
+fastx_toolkit (http://hannonlab.cshl.edu/fastx_toolkit); already done
+Flexbar (https://github.com/seqan/flexbar); brew install brewsci/science/flexbar その他だめ　インストールできているかなぞ
+RNAfold (http://www.tbi.univie. ac.at/RNA); conda install -c bioconda viennarna　　success
+randfold (http://bioinformatics.psb.ugent.be/sup plementary_data/erbon/nov2003/); conda install -c bioconda randfold success
+Novoalign (http://www. novocraft.com/support/download/); conda install -c bioconda novoalign success
+HTSeq (http://www- huber.embl.de/users/anders/HTSeq/); conda install -c bioconda htseq success
+mirPRo (https:// sourceforge.net/p/mirpro); ? できていない
+rstudio (https://www.rstudio. com/products/rstudio/download/). already done
