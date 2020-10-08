@@ -20,3 +20,11 @@ Novoalign (http://www. novocraft.com/support/download/); conda install -c biocon
 HTSeq (http://www- huber.embl.de/users/anders/HTSeq/); conda install -c bioconda htseq success
 mirPRo (https:// sourceforge.net/p/mirpro); ? できていない
 rstudio (https://www.rstudio. com/products/rstudio/download/). already done
+
+
+Rename the fastq files.
+$mv SRR873382.fastq Con1.fastq 
+$mv SRR873383.fastq Con2.fastq 
+$mv SRR873384.fastq Exp1.fastq 
+$mv SRR873385.fastq Exp2.fastq
+ 
