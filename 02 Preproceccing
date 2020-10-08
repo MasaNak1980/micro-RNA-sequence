@@ -1,0 +1,36 @@
+1 Remove the reads of bad quality using fastq_quality_filter from fastx-toolkit.
+ $fastq_quality_filter -q 20 -p 95 -i Con1.fastq -o Con1_qf. fastq
+ $fastq_quality_filter -q 20 -p 95 -i Con2.fastq -o Con2_qf. fastq
+ $fastq_quality_filter -q 20 -p 95 -i Exp1.fastq -o Exp1_qf. fastq
+ $fastq_quality_filter -q 20 -p 95 -i Exp2.fastq -o Exp2_qf. fastq
+ 
+2 Trim the 3'-adapter with flexbar.
+ $flexbar -t Con1_trimed -r Con1_qf.fastq -as ATCTCG- TATGCCGTCTTCTGCTT -ao 4 -m 16 -n 6
+ $flexbar -t Con2_trimed -r Con2_qf.fastq -as ATCTCG- TATGCCGTCTTCTGCTT -ao 4 -m 16 -n 6
+ $flexbar -t Exp1_trimed -r Exp1_qf.fastq -as ATCTCG- TATGCCGTCTTCTGCTT -ao 4 -m 16 -n 6
+ $flexbar -t Exp2_trimed -r Exp2_qf.fastq -as ATCTCG- TATGCCGTCTTCTGCTT -ao 4 -m 16 -n 6
+ 
+3 Get the length distribution of total reads to have an overview of the datasets. 
+  $cat Con1_trimed.fastq | awk ’{if(NR%4==2) print length ($1)}’ | sort -n | uniq -c >Con1_readLength.txt
+  $cat Con2_trimed.fastq | awk ’{if(NR%4==2) print length ($1)}’ | sort -n | uniq -c >Con2_readLength.txt
+  $cat Exp1_trimed.fastq | awk ’{if(NR%4==2) print length ($1)}’ | sort -n | uniq -c >Exp1_readLength.txt
+  $cat Exp2_trimed.fastq | awk ’{if(NR%4==2) print length ($1)}’ | sort -n | uniq -c >Exp2_readLength.txt
+
+4 Open the Rstudio 
+  Setup the working directory and load the data from step 3. 
+  Using the head() function to check the loaded datasets, there are two columns for each dataset: 
+  the first column is frequency and the second column is read length.
+
+　　>setwd(“~/your-working-directory”)
+　　>Con1_lengthDis = read.table("Con1_readLength.txt") 
+　　>Con2_lengthDis = read.table("Con2_readLength.txt") 
+　　>Exp1_lengthDis = read.table("Exp1_readLength.txt") 
+　　>Exp2_lengthDis = read.table("Exp2_readLength.txt") 
+
+　　>head(Con1_lengthDis)## V1 V2
+　　　##1 232515 16
+　　　##2 325012 17
+　　　##3 308513 18
+　　　##4 294719 19
+　　　##5 485567 20
+　　　##6 1803169 21
