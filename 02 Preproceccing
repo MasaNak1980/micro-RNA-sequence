@@ -1,8 +1,8 @@
 1 Remove the reads of bad quality using fastq_quality_filter from fastx-toolkit.
- $fastq_quality_filter -q 20 -p 95 -i Con1.fastq -o Con1_qf. fastq
- $fastq_quality_filter -q 20 -p 95 -i Con2.fastq -o Con2_qf. fastq
- $fastq_quality_filter -q 20 -p 95 -i Exp1.fastq -o Exp1_qf. fastq
- $fastq_quality_filter -q 20 -p 95 -i Exp2.fastq -o Exp2_qf. fastq
+ $fastq_quality_filter -q 20 -p 95 -i Con1.fastq -o Con1_qf.fastq
+ $fastq_quality_filter -q 20 -p 95 -i Con2.fastq -o Con2_qf.fastq
+ $fastq_quality_filter -q 20 -p 95 -i Exp1.fastq -o Exp1_qf.fastq
+ $fastq_quality_filter -q 20 -p 95 -i Exp2.fastq -o Exp2_qf.fastq
  
 2 Trim the 3'-adapter with flexbar.
  $flexbar -t Con1_trimed -r Con1_qf.fastq -as ATCTCGTATGCCGTCTTCTGCTT -ao 4 -m 16 -n 6
