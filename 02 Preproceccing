@@ -11,10 +11,10 @@
  $flexbar -t Exp2_trimed -r Exp2_qf.fastq -as ATCTCGTATGCCGTCTTCTGCTT -ao 4 -m 16 -n 6
  
 3 Get the length distribution of total reads to have an overview of the datasets. 
-  $cat Con1_trimed.fastq | awk ’{if(NR%4==2) print length ($1)}’ | sort -n | uniq -c >Con1_readLength.txt
-  $cat Con2_trimed.fastq | awk ’{if(NR%4==2) print length ($1)}’ | sort -n | uniq -c >Con2_readLength.txt
-  $cat Exp1_trimed.fastq | awk ’{if(NR%4==2) print length ($1)}’ | sort -n | uniq -c >Exp1_readLength.txt
-  $cat Exp2_trimed.fastq | awk ’{if(NR%4==2) print length ($1)}’ | sort -n | uniq -c >Exp2_readLength.txt
+  $cat Con1_trimed.fastq | awk '{if(NR%4==2) print length ($1)}' | sort -n | uniq -c >Con1_readLength.txt
+  $cat Con2_trimed.fastq | awk '{if(NR%4==2) print length ($1)}' | sort -n | uniq -c >Con2_readLength.txt
+  $cat Exp1_trimed.fastq | awk '{if(NR%4==2) print length ($1)}' | sort -n | uniq -c >Exp1_readLength.txt
+  $cat Exp2_trimed.fastq | awk '{if(NR%4==2) print length ($1)}' | sort -n | uniq -c >Exp2_readLength.txt
 
 4 Open the Rstudio 
   Setup the working directory and load the data from step 3. 
