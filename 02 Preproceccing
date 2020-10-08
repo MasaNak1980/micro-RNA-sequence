@@ -5,10 +5,10 @@
  $fastq_quality_filter -q 20 -p 95 -i Exp2.fastq -o Exp2_qf. fastq
  
 2 Trim the 3'-adapter with flexbar.
- $flexbar -t Con1_trimed -r Con1_qf.fastq -as ATCTCG- TATGCCGTCTTCTGCTT -ao 4 -m 16 -n 6
- $flexbar -t Con2_trimed -r Con2_qf.fastq -as ATCTCG- TATGCCGTCTTCTGCTT -ao 4 -m 16 -n 6
- $flexbar -t Exp1_trimed -r Exp1_qf.fastq -as ATCTCG- TATGCCGTCTTCTGCTT -ao 4 -m 16 -n 6
- $flexbar -t Exp2_trimed -r Exp2_qf.fastq -as ATCTCG- TATGCCGTCTTCTGCTT -ao 4 -m 16 -n 6
+ $flexbar -t Con1_trimed -r Con1_qf.fastq -as ATCTCGTATGCCGTCTTCTGCTT -ao 4 -m 16 -n 6
+ $flexbar -t Con2_trimed -r Con2_qf.fastq -as ATCTCGTATGCCGTCTTCTGCTT -ao 4 -m 16 -n 6
+ $flexbar -t Exp1_trimed -r Exp1_qf.fastq -as ATCTCGTATGCCGTCTTCTGCTT -ao 4 -m 16 -n 6
+ $flexbar -t Exp2_trimed -r Exp2_qf.fastq -as ATCTCGTATGCCGTCTTCTGCTT -ao 4 -m 16 -n 6
  
 3 Get the length distribution of total reads to have an overview of the datasets. 
   $cat Con1_trimed.fastq | awk ’{if(NR%4==2) print length ($1)}’ | sort -n | uniq -c >Con1_readLength.txt
