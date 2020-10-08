@@ -34,3 +34,28 @@
 　　　##4 294719 19
 　　　##5 485567 20
 　　　##6 1803169 21
+   
+   
+5 Produce the figures of reads length distribution
+
+setwd("/Volumes/Biomasa/miR/dataset")
+
+Con1_lengthDis = read.table("Con1_readLength.txt")
+Con2_lengthDis = read.table("Con2_readLength.txt") 
+Exp1_lengthDis = read.table("Exp1_readLength.txt") 
+Exp2_lengthDis = read.table("Exp2_readLength.txt") 
+
+head(Con1_lengthDis)
+
+
+ConColor = c("gray20","gray70")
+ExpColor = c("pink","red") 
+
+barplot(rbind(Con1_lengthDis[1:15,1],Con2_lengthDis [1:15,1])/1000000,names.arg = 16:30,beside = T,col=ConColor,ylab="Total read counts (M)",xlab="Adapter trimed reads length",main = "Length Distribution") 
+legend("topleft",c("Con1","Con2"),bty="n",fill = ConColor) 
+
+barplot(rbind(Exp1_lengthDis[1:15,1],Exp2_lengthDis [1:15,1])/1000000,names.arg = 16:30,beside= T,col=ExpColor,ylab="Total read counts(M)",xlab="Adapter trimed reads length",main = "Length Distribution")
+legend("topleft",c("Exp1","Exp2"),bty="n",fill = ExpColor)
+
+
+
