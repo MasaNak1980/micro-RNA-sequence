@@ -4,6 +4,7 @@ mirPRo Pipeline
     
     
  2 Run the pipeline using preprocessed data
+ Linuxでしか動かなない
   pathを通す　
   $ source ~/.zshrc
   $ mirpro -i Con1_trimed.fastq -i Con2_trimed.fastq -i Exp1_trimed.fastq -i Exp2_trimed.fastq -m mature.fa -p hairpin.fa -d ./miRNA -s hsa -a 0 -q 0 -t 4 --gtf Homo_sapiens.GRCh38.95.gtf --novel 1 --other mmu -g Homo_sapiens.GRCh38.dna.primary_assembly.fa --index hg38.idx
