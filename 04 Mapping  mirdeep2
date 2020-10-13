@@ -1,0 +1,52 @@
+Reference 
+https://github.com/rajewsky-lab/mirdeep2/blob/master/TUTORIAL.md
+https://www.mdc-berlin.de/content/mirdeep2-documentation
+
+
+Preliminary files
+
+Homo_sapiens.GRCh38.dna.primary_assembly.fa. 	a FASTA file with the reference genome.
+mature.fa.	a FASTA file with the reference miRBase mature miRNAs for the species (C. elegans miRBase v.14 mature miRNAs)
+hairpin.fa.	a FASTA file with the reference miRBase precursor miRNAs for the species (C. elegans miRBase v.14 precursor miRNAs)
+Exp1_trimed.fastq.	a FASTA file with the deep sequencing reads.
+
+error 対策1
+miRNA reference this species file mature.fa has not allowed whitespaces in its first identifier
+というエラーが出るので、Homo_sapiens.GRCh38.dna.primary_assembly.fa、mature.fa.、hairpin.fa.の３つのファイルで空欄を下記のプログラムで除去する
+
+$ perl -plane 's/\s+.+$//' < mature.fa > new_mature.fa
+
+error 対策2
+Error: problem with new_hairpin.fa
+Error in line 4.371: The sequence
+UUGUGUGCGUGCCUGGCUCCCUGUAUGCCACACAUGUAGCGCCCAACCCAGAUGYUAAGG
+
+→Open TextEditor 
+and replace following characters 
+Y, R, W, S, M, B  to N 
+
+Analysis 
+Step 1:
+$ bowtie-build Homo_sapiens.GRCh38.dna.primary_assembly.fa homosapiens 
+$ mapper.pl Exp1_trimed.fastq -h -g hsa -e -m -s Exp1_trimed_output_fastq.collapsed -p homosapiens -t trimmed_output.fastq_vs_genome_h19.arf
+$ miRDeep2.pl Exp1_trimed_output_fastq.collapsed new_hg38.fa trimmed_output.fastq_vs_genome_h19.arf new_mature.fa none new_hairpin.fa -t hsa -p
+
+
+The detailed file explanations are:
+input.fastq : input fastq file provided by NGS experiments.
+Exp1_trimed_output_fastq : adapter trimmed fastq file
+Exp1_trimed_output_fastq.collapsed : output file from mapper.pl
+Exp1_trimed_output.fastq_vs_genome_h38.arf : another output file from mapper.pl
+-p homosapiens (outputfile from bowtie-build, use the file name from here.1.ebwt)
+hg38.fa : whole human genome sequence, the file is needed to remove spaces using  $ perl -plane 's/\s+.+$//' < mature.fa > new_mature.fa
+new_mature.fa : human mature miRNA sequence (fasta format) the file is needed to remove spaces using  $ perl -plane 's/\s+.+$//' < mature.fa > new_mature.fa
+hg38.fa : whole human genome sequence, the file is needed to remove spaces using  
+mature_ptr.fa : chimp mature miRNA sequence (fasta format) →not used, none 
+hg38.fa : whole human genome sequence, the file is needed to remove spaces using  　
+new_hairpin.fa : human pre-miRNA sequence (fasta format) the file is needed to remove spaces using  $ perl -plane 's/\s+.+$//' < mature.fa > new_mature.fa
+
+Finally, miRDeeps generated huge number of files. For more details, see
+https://www.mdcberlin.de/8551903/en/research/research_teams/systems_biology_of_gene_regulatory_el
+ements/projects/miRDeep
+
+
