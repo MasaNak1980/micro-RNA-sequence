@@ -1,0 +1,225 @@
+R で行う　
+library(DESeq2)
+library(tximport)
+library(readr)
+library(ggplot2)
+library(ggthemes)
+library(dplyr)
+library(ggsignif)
+library(scales)
+library(tidyverse)
+library(ggpubr)
+library(rstatix)
+library(pheatmap)
+
+setwd("/Volumes/Biomasa/mir/DEseq")
+
+
+# Dataを整理する result file(miRNAs_expressed_all_samples_14_10_2020_t_12_32_27.CSV)を作業用directryに移動して、名前を’Con1.tsv’に変更
+Con1 <- read.table(file = 'Con1.mir.results.tsv', sep = '\t', header = FALSE)
+write.csv(Con1, "Con1.csv", row.names = TRUE)
+Con1 <- read.csv("Con1.csv", row.names= 1)
+remove <- c(3,4,5,6) #read_countを使うことに。
+Con1 <- Con1[,-remove]
+head(Con1)
+
+Con2 <- read.table(file = 'Con2.mir.results.tsv', sep = '\t', header = FALSE)
+write.csv(Con2, "Con2.csv", row.names = TRUE)
+Con2 <- read.csv("Con2.csv", row.names=1)
+Con2 <- Con2[,-remove]
+head(Con2)
+
+Exp1 <- read.table(file = 'Exp1.mir.results.tsv', sep = '\t', header = FALSE)
+write.csv(Exp1, "Exp1.csv", row.names = TRUE)
+Exp1 <- read.csv("Exp1.csv", row.names=1)
+Exp1 <- Exp1[,-remove]
+head(Exp1)
+
+Exp2 <- read.table(file = 'Exp2.mir.results.tsv', sep = '\t', header = FALSE)
+write.csv(Exp2, "Exp2.csv", row.names = TRUE)
+Exp2 <- read.csv("Exp2.csv", row.names=1)
+Exp2 <- Exp2[,-remove]
+head(Exp2)
+
+miR <- cbind(Exp1, Exp2,Con1, Con2) #Dataの結合　横につなげる
+head(miR)
+print(nrow(miR))　
+print(nrow(Con1))
+print(nrow(Con2))
+
+
+miR_name <- miR[,1] #miRをrow nameにしたかったが、うまくいかず、結局このやり方。
+head(miR_name)
+removeR <- c(1,3,5,7)
+miR <- miR[,-removeR]
+head(miR)
+
+write.csv(miR,"miR.csv")
+head(miR)
+miR <- as.matrix(read.csv("miR.csv", header = T))
+head(miR)
+rownames(miR) <- miR_name
+miR <- miR[, -1]
+head(miR)
+colnames(miR) <- c("Exp1", "Exp2","Con1", "Con2")
+head(miR)
+
+
+#　Load the data into DESeq2. Prefilter the data to remove miR- NAs that have only 0 or 1 read. Run the differential expression analysis with default setting
+
+sampleTable <- data.frame(condition=factor(rep(c("Exp", "Con"),each=2)))
+rownames(sampleTable) <- colnames(miR)
+sampleTable
+dds <- DESeqDataSetFromMatrix(countData = miR, colData = sampleTable, design = ~ condition)
+dds <- dds [rowSums(counts(dds)) > 1,]
+dds_wt = DESeq(dds)
+res_wt<- results(dds_wt)
+res_wt
+res_wt_naomit <- na.omit(res_wt) # NA を除外
+mcols(res_wt_naomit)$description
+summary(res_wt_naomit)
+
+
+plotMA(res_wt_naomit, main="Differentially Expression miRNAs", ylim=c(-2,2))
+
+mirnaresult = as.data.frame(res_wt_naomit)
+diff = mirnaresult[mirnaresult$padj<0.1,]
+write.csv(diff,"DE_miRNA.csv")
+
+
+#発現変動のある転写産物を補正済みp値の低い順に並べる
+res_wt_naomit
+res_wt_naomit_sort <- res_wt_naomit[order(res_wt_naomit$padj),]
+
+#発現変動の大きな遺伝子、上位20個を表示させる（補正済みp値の低い20遺伝子）
+head(res_wt_naomit_sort, 20)
+
+#各カラムの説明は下記コマンドで表示させる
+mcols(res_wt_naomit_sort)
+
+#データフレームの保存
+write.table(res_wt_naomit, "Wald-test.result.txt", sep="\t", quote=F, row.names=F)
+
+#作図（MA-plot）reference;http://array.cell-innovator.com/?p=1772
+#作図・表示させるコマンド
+plotMA(res_wt, ylim=c(-2, 2))
+#保存する
+png("MAplot.png") # EPS形式にしたい場合はpostscript("MAplot.eps")を使う
+plotMA(res_wt, ylim=c(-10, 10))
+dev.off()
+
+
+#特定の遺伝子の発現量（count）を示すプロットを作図
+#発現変動の大きな遺伝子を表示させる
+head(res_wt_naomit_sort)
+
+#FASN (ENSG00000169710) という遺伝子の発現変動が大きかったので、この発現量をプロットする
+#発現量を図示する
+plotCounts(dds, gene="hsa-miR-210-5p", intgroup="condition")
+
+
+#自前で作図するためにデータのみを抽出したい場合は returnData=T を加える
+d <- plotCounts(dds, gene="hsa-miR-210-5p", intgroup="condition", returnData=T)
+head(d)
+
+#minumum p value
+plotCounts(dds, gene=which.min(res_wt$padj), intgroup="condition")
+par(mar=c(5,5,5,5), cex=1.0, cex.main=1.4, cex.axis=1.4, cex.lab=1.4)
+topT <- as.data.frame(res_wt)
+
+#Adjusted P values (FDR Q values)
+with(topT, plot(log2FoldChange, -log10(padj), pch=20, main="Volcano plot", cex=1.0, xlab=bquote(~Log[2]~fold~change), ylab=bquote(~-log[10]~Q~value)))
+
+with(subset(topT, padj<0.05 & abs(log2FoldChange)>2), points(log2FoldChange, -log10(padj), pch=20, col="red", cex=0.5))
+
+#with(subset(topT, padj<0.05 & abs(log2FoldChange)>2), text(log2FoldChange, -log10(padj), labels=subset(rownames(topT), topT$padj<0.05 & abs(topT$log2FoldChange)>2), cex=0.8, pos=3))
+
+#Add lines for absolute FC>2 and P-value cut-off at FDR Q<0.05
+abline(v=0, col="black", lty=3, lwd=1.0)
+abline(v=-2, col="black", lty=4, lwd=2.0)
+abline(v=2, col="black", lty=4, lwd=2.0)
+abline(h=-log10(max(topT$pvalue[topT$padj<0.05], na.rm=TRUE)), col="black", lty=4, lwd=2.0)
+
+# refference 
+# http://bioconductor.org/packages/devel/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#exploring-and-exporting-results
+# res は　res_wt_naomit のこと
+
+# More information on results columns
+mcols(res_wt_naomit)$description
+
+#How many adjusted p-values were less than 0.1?
+sum(res_wt$padj < 0.1, na.rm=TRUE)
+
+# Data transformations and visualization
+# Count data transformations
+vsd <- vst(dds, blind=FALSE)
+rld <- rlog(dds, blind=FALSE) #Regularized log transformation 
+head(assay(vsd), 3)
+
+# Effects of transformations on the variance
+ntd <- normTransform(dds)
+class(ntd)
+
+library("vsn")
+library(hexbin)
+meanSdPlot(assay(ntd))
+meanSdPlot(assay(vsd))
+meanSdPlot(assay(rld))
+
+
+library("pheatmap")
+#heatmap oredered by P value (https://www.biostars.org/p/179911/)
+# We can order our results table by the smallest p value:
+res_wtOrdered <- res_wt_naomit[order(res_wt_naomit$pvalue),]
+summary(res_wtOrdered)
+
+topgenes <- head(rownames(res_wtOrdered),7)
+mat <- assay(rld)[topgenes,] #rld
+mat <- mat - rowMeans(mat)
+mat
+
+df <- as.data.frame(colData(dds)[,c("condition")])
+df
+# Change the name of column 
+colnames(df) <- 'condition'
+
+#To change the name of genes
+head(res_wt_naomit_sort, 7) #7個目のp値を調べた
+res_wt_naomit_annot_sort_7 <- res_wt_naomit_sort[1:7,]　#7個だけ厳選 Pvalue 少し大きする
+res_wt_naomit_annot_sort_7
+rownames(df) <- colnames(mat) #rownames(data)  # data行の名前colnames(data2) data2の列の名前
+h <- pheatmap(mat, show_colnames = T, annotation_col=df, fontsize =20, wide =3, height = 5)
+ggsave("heatmap.png", h, dpi = 300, width = 8, height = 6) 
+
+#Heatmap of the sample-to-sample distances
+sampleDists <- dist(t(assay(vsd)))
+
+library("RColorBrewer")
+sampleDistMatrix <- as.matrix(sampleDists)
+rownames(sampleDistMatrix) <- paste(vsd$condition, vsd$type, sep="-")
+colnames(sampleDistMatrix) <- NULL
+colors <- colorRampPalette( rev(brewer.pal(9, "Blues")) )(255)
+h2 <- pheatmap(sampleDistMatrix,
+         clustering_distance_rows=sampleDists,
+         clustering_distance_cols=sampleDists,
+         col=colors,
+         fontsize =20)
+ggsave("sampleDistMatrix.png", h2, dpi = 300, width = 8, height = 6) 
+
+# Principal component plot of the samples
+plotPCA(vsd, intgroup=c("condition")) #条件を増やすなら、,"~~~",というふうに加えていく 
+
+pcaData <- plotPCA(vsd, intgroup=c("condition"), returnData=TRUE)
+percentVar <- round(100 * attr(pcaData, "percentVar"))
+p <- ggplot(pcaData, aes(PC1, PC2, color=condition)) +
+  geom_point(size=5) +
+  xlab(paste0("PC1: ",percentVar[1],"% variance")) +
+  ylab(paste0("PC2: ",percentVar[2],"% variance")) + 
+  coord_fixed()+
+ggsave("PCA.png", p, dpi = 300, width = 8, height = 6) 
+
+
+#rldでtransformした場合のPCA
+rld <- rlog(dds)
+plotPCA(rld, intgroup=c("condition"))
+
