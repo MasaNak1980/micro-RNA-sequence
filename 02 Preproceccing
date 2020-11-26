@@ -3,13 +3,18 @@
  $fastq_quality_filter -q 20 -p 95 -i Con2.fastq -o Con2_qf.fastq
  $fastq_quality_filter -q 20 -p 95 -i Exp1.fastq -o Exp1_qf.fastq
  $fastq_quality_filter -q 20 -p 95 -i Exp2.fastq -o Exp2_qf.fastq
-for sample in `ls *fastq | xargs basename -s .fastq | cut -f1 -d"_" | uniq`; do echo Remove the reads of bad quality:${sample}; fastq_quality_filter -q 20 -p 95 -i ${sample}.fastq -o ${sample}_qf.fastq;done; echo finished 
+for sample in `ls *fastq | xargs basename -s .fastq | uniq`; do echo Remove the reads of bad quality:${sample}; fastq_quality_filter -q 20 -p 95 -i ${sample}.fastq -o ${sample}_qf.fastq;done; echo finished 
 
 2 Trim the 3'-adapter with flexbar.
  $flexbar -t Con1_trimed -r Con1_qf.fastq -as ATCTCGTATGCCGTCTTCTGCTT -ao 4 -m 16 -n 6
  $flexbar -t Con2_trimed -r Con2_qf.fastq -as ATCTCGTATGCCGTCTTCTGCTT -ao 4 -m 16 -n 6
  $flexbar -t Exp1_trimed -r Exp1_qf.fastq -as ATCTCGTATGCCGTCTTCTGCTT -ao 4 -m 16 -n 6
  $flexbar -t Exp2_trimed -r Exp2_qf.fastq -as ATCTCGTATGCCGTCTTCTGCTT -ao 4 -m 16 -n 6
+
+HPC 他のmoduleはloadしない方がよい 
+module load flexbar/3.0.3-foss-2016b 
+for sample in `ls *_qf.fastq | xargs basename -s _qf.fastq | uniq`; do echo Trim the adapter:${sample}; flexbar -t ${sample}._trimed -r ${sample}_qf.fastq -as ATCTCGTATGCCGTCTTCTGCTT -ao 4 -m 16 -n 6;done; echo finished 
+
  
 3 Get the length distribution of total reads to have an overview of the datasets. 
   $cat Con1_trimed.fastq | awk '{if(NR%4==2) print length ($1)}' | sort -n | uniq -c >Con1_readLength.txt
