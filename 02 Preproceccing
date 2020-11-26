@@ -3,7 +3,8 @@
  $fastq_quality_filter -q 20 -p 95 -i Con2.fastq -o Con2_qf.fastq
  $fastq_quality_filter -q 20 -p 95 -i Exp1.fastq -o Exp1_qf.fastq
  $fastq_quality_filter -q 20 -p 95 -i Exp2.fastq -o Exp2_qf.fastq
- 
+for sample in `ls *fastq | xargs basename -s .fastq | cut -f1 -d"_" | uniq`; do echo Remove the reads of bad quality:${sample}; fastq_quality_filter -q 20 -p 95 -i ${sample}.fastq -o ${sample}_qf.fastq;done; echo finished 
+
 2 Trim the 3'-adapter with flexbar.
  $flexbar -t Con1_trimed -r Con1_qf.fastq -as ATCTCGTATGCCGTCTTCTGCTT -ao 4 -m 16 -n 6
  $flexbar -t Con2_trimed -r Con2_qf.fastq -as ATCTCGTATGCCGTCTTCTGCTT -ao 4 -m 16 -n 6
