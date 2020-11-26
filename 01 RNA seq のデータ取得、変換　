@@ -32,8 +32,12 @@ Pathを通すことを忘れない。
 
 
 Rename the fastq files.
-$mv SRR873382.fastq Con1.fastq 
-$mv SRR873383.fastq Con2.fastq 
-$mv SRR873384.fastq Exp1.fastq 
-$mv SRR873385.fastq Exp2.fastq
- 
+mv SRR873382.fastq Con1.fastq 
+mv SRR873383.fastq Con2.fastq 
+mv SRR873384.fastq Exp1.fastq 
+mv SRR873385.fastq Exp2.fastq
+mv SRR873386.fastq Exp3.fastq
+mv SRR873387.fastq Exp4.fastq
+mv SRR873388.fastq Exp5.fastq
+mv SRR873389.fastq Exp6.fastq
+
