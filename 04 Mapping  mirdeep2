@@ -29,8 +29,11 @@ Analysis
 Step 1:
 $ bowtie-build Homo_sapiens.GRCh38.dna.primary_assembly.fa homosapiens 
 $ mapper.pl Exp1_trimed.fastq -h -g hsa -e -m -s Exp1_trimed_output_fastq.collapsed -p homosapiens -t trimmed_output.fastq_vs_genome_h19.arf
+HPC
+for sample in `ls *fastq | xargs basename -s _trimed.fastq | uniq`; do echo mapping:${sample}; mapper.pl ${sample}_trimed.fastq -h -g hsa -e -j -m -s ${sample}_trimed_output_fastq.collapsed -p ../ref_miR/homosapiens -t ${sample}_trimmed_output.fastq_vs_genome_h19.arf;done; echo finished 
 $ miRDeep2.pl Exp1_trimed_output_fastq.collapsed new_hg38.fa trimmed_output.fastq_vs_genome_h19.arf new_mature.fa none new_hairpin.fa -t hsa -p
-
+HPC
+for sample in `ls *fastq | xargs basename -s _trimed.fastq | uniq`; do echo miRDeep2:${sample}; miRDeep2.pl ${sample}_trimed_output_fastq.collapsed ../ref_miR/new_hg38.fa ${sample}_trimmed_output.fastq_vs_genome_h19.arf ../ref_miR/new_mature.fa none ../ref_miR/new_hairpin.fa -t hsa -p;done; echo finished 
 
 The detailed file explanations are:
 input.fastq : input fastq file provided by NGS experiments.
