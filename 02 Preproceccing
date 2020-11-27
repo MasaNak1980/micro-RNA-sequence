@@ -3,7 +3,19 @@
  $fastq_quality_filter -q 20 -p 95 -i Con2.fastq -o Con2_qf.fastq
  $fastq_quality_filter -q 20 -p 95 -i Exp1.fastq -o Exp1_qf.fastq
  $fastq_quality_filter -q 20 -p 95 -i Exp2.fastq -o Exp2_qf.fastq
+HPC
+module load FASTX-Toolkit/0.0.14-foss-2016b
+for sample in `ls *fastq | xargs basename -s .fastq | uniq`; do echo Remove the reads of bad quality:${sample}; fastq_quality_filter -q 20 -p 95 -i ${sample}.fastq -o ${sample}_qf.fastq;done; echo finished
 for sample in `ls *fastq | xargs basename -s .fastq | uniq`; do echo Remove the reads of bad quality:${sample}; fastq_quality_filter -q 20 -p 95 -i ${sample}.fastq -o ${sample}_qf.fastq;done; echo finished 
+row data移動
+mkdir row
+mv *.fastq /home/mn575/project/data/homsp/seq_mir_test/row
+
+ｑｆ checkしたものはqfフォルダへ
+mkdir qf 
+mv *_qf.fastq /home/mn575/project/data/homsp/seq_mir_test/qf
+cd qf
+
 
 2 Trim the 3'-adapter with flexbar.
  $flexbar -t Con1_trimed -r Con1_qf.fastq -as ATCTCGTATGCCGTCTTCTGCTT -ao 4 -m 16 -n 6
@@ -14,6 +26,9 @@ for sample in `ls *fastq | xargs basename -s .fastq | uniq`; do echo Remove the 
 HPC 他のmoduleはloadしない方がよい 
 module load flexbar/3.0.3-foss-2016b 
 for sample in `ls *_qf.fastq | xargs basename -s _qf.fastq | uniq`; do echo Trim the adapter:${sample}; flexbar -t ${sample}_trimed -r ${sample}_qf.fastq -as ATCTCGTATGCCGTCTTCTGCTT -ao 4 -m 16 -n 8;done; echo finished 
+
+mv *_trimed.fastq /home/mn575/project/data/homsp/seq_mir_test
+cd /home/mn575/project/data/homsp/seq_mir_test
 
  
 3 Get the length distribution of total reads to have an overview of the datasets. 
