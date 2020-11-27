@@ -24,6 +24,8 @@ UUGUGUGCGUGCCUGGCUCCCUGUAUGCCACACAUGUAGCGCCCAACCCAGAUGYUAAGG
 →Open TextEditor 
 and replace following characters 
 Y, R, W, S, M, B  to N 
+mapperのThe -j optionsでも対応可能
+The -j options removes entries with non-canonical letters (letters other than a, c, g, t, u, n, A, C, G, T, U, or N)
 
 Analysis 
 Step 1:
