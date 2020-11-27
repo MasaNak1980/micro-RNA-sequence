@@ -13,7 +13,7 @@ for sample in `ls *fastq | xargs basename -s .fastq | uniq`; do echo Remove the 
 
 HPC 他のmoduleはloadしない方がよい 
 module load flexbar/3.0.3-foss-2016b 
-for sample in `ls *_qf.fastq | xargs basename -s _qf.fastq | uniq`; do echo Trim the adapter:${sample}; flexbar -t ${sample}._trimed -r ${sample}_qf.fastq -as ATCTCGTATGCCGTCTTCTGCTT -ao 4 -m 16 -n 6;done; echo finished 
+for sample in `ls *_qf.fastq | xargs basename -s _qf.fastq | uniq`; do echo Trim the adapter:${sample}; flexbar -t ${sample}._trimed -r ${sample}_qf.fastq -as ATCTCGTATGCCGTCTTCTGCTT -ao 4 -m 16 -n 8;done; echo finished 
 
  
 3 Get the length distribution of total reads to have an overview of the datasets. 
@@ -21,6 +21,8 @@ for sample in `ls *_qf.fastq | xargs basename -s _qf.fastq | uniq`; do echo Trim
   $cat Con2_trimed.fastq | awk '{if(NR%4==2) print length ($1)}' | sort -n | uniq -c >Con2_readLength.txt
   $cat Exp1_trimed.fastq | awk '{if(NR%4==2) print length ($1)}' | sort -n | uniq -c >Exp1_readLength.txt
   $cat Exp2_trimed.fastq | awk '{if(NR%4==2) print length ($1)}' | sort -n | uniq -c >Exp2_readLength.txt
+  
+
 
 4 Open the Rstudio 
   Setup the working directory and load the data from step 3. 
