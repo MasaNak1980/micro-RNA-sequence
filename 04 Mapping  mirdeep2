@@ -30,6 +30,13 @@ The -j options removes entries with non-canonical letters (letters other than a,
 Analysis 
 Step 1:
 $ bowtie-build Homo_sapiens.GRCh38.dna.primary_assembly.fa homosapiens 
+HPC
+cd Homo_sapiens.GRCh38.dna.primary_assembly.faのあるディレクトリで。miRDeep2で使用する同じBowtieを使用すること。
+module load miniconda
+conda activate bioinfo
+bowtie-build Homo_sapiens.GRCh38.dna.primary_assembly.fa homosapiens 
+
+
 $ mapper.pl Exp1_trimed.fastq -h -g hsa -e -m -s Exp1_trimed_output_fastq.collapsed -p homosapiens -t trimmed_output.fastq_vs_genome_h19.arf
 HPC
 for sample in `ls *fastq | xargs basename -s _trimed.fastq | uniq`; do echo mapping:${sample}; mapper.pl ${sample}_trimed.fastq -h -g hsa -e -j -m -s ${sample}_trimed_output_fastq.collapsed -p ../ref_miR/homosapiens -t ${sample}_trimmed_output.fastq_vs_genome_h19.arf;done; echo finished 
