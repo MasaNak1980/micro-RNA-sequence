@@ -34,13 +34,15 @@ $ mapper.pl Exp1_trimed.fastq -h -g hsa -e -m -s Exp1_trimed_output_fastq.collap
 HPC
 for sample in `ls *fastq | xargs basename -s _trimed.fastq | uniq`; do echo mapping:${sample}; mapper.pl ${sample}_trimed.fastq -h -g hsa -e -j -m -s ${sample}_trimed_output_fastq.collapsed -p ../ref_miR/homosapiens -t ${sample}_trimmed_output.fastq_vs_genome_h19.arf;done; echo finished 
 $ miRDeep2.pl Exp1_trimed_output_fastq.collapsed new_hg38.fa trimmed_output.fastq_vs_genome_h19.arf new_mature.fa none new_hairpin.fa -t hsa -p
+
 HPC
 module load miniconda
 conda activate bioinfo
-for sample in `ls *fastq | xargs basename -s _trimed.fastq | uniq`; do echo miRDeep2:${sample}; miRDeep2.pl ${sample}_trimed_output_fastq.collapsed ../ref_miR/new_hg38.fa ${sample}_trimmed_output.fastq_vs_genome_h19.arf ../ref_miR/new_mature.fa none ../ref_miR/new_hairpin.fa -t hsa -p;done; echo finished 
+for sample in `ls *fastq | xargs basename -s _trimed.fastq | uniq`; do echo miRDeep2:${sample}; miRDeep2.pl ${sample}_trimed_output_fastq.collapsed ../ref_miR/new_hg38.fa ${sample}_trimed_output.fastq_vs_genome_h19.arf ../ref_miR/new_mature.fa none ../ref_miR/new_hairpin.fa -t hsa -p;done; echo finished 
 
+☆batch
 #!/bin/bash
-#SBATCH --job-name=miRDeep2
+#SBATCH --job-name=miRDeep2_4_samples
 #SBATCH --out="slurm-%j.out"
 #SBATCH --time=2-00:01:00
 #SBATCH --nodes=1 --ntasks=1 --cpus-per-task=1
@@ -56,7 +58,7 @@ echo "Job name: ${SLURM_JOB_NAME}, Job ID: ${SLURM_JOB_ID}"
 echo "  I have ${SLURM_CPUS_ON_NODE} CPUs and ${mem_gbytes}GiB of RAM on compute node $(hostname)"
 module load miniconda
 conda activate bioinfo
-for sample in `ls *fastq | xargs basename -s _trimed.fastq | uniq`; do echo miRDeep2:${sample}; miRDeep2.pl ${sample}_trimed_output_fastq.collapsed ../ref_miR/new_hg38.fa ${sample}_trimmed_output.fastq_vs_genome_h19.arf ../ref_miR/new_mature.fa none ../ref_miR/new_hairpin.fa -t hsa -p;done; echo finished 
+for sample in `ls *fastq | xargs basename -s _trimed.fastq | uniq`; do echo miRDeep2:${sample}; miRDeep2.pl ${sample}_trimed_output_fastq.collapsed ../ref_miR/new_hg38.fa ${sample}_trimed_output.fastq_vs_genome_h19.arf ../ref_miR/new_mature.fa none ../ref_miR/new_hairpin.fa -t hsa -p;done; echo finished 
 
 
 
