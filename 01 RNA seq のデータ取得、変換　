@@ -9,8 +9,9 @@ Accestion listも一緒にダウンロード　まとめて、SRAfile をダウ�
 以下のコマンドで自動的にダウンロード
 module load SRA-Toolkit/2.10.8-centos_linux64
 cat SRR_Acc_List8.txt | while read line; do cmd="fasterq-dump --split-files ${line}; ${line}*fastq"; eval ${cmd}; done
-cat SRR_Acc_List8.txt | while read line; do cmd="fasterq-dump --split-files ${line}; gzip ${line}*fastq"; eval ${cmd}; done
-
+cat SRR_Acc_List_MSC.txt | while read line; do cmd="fasterq-dump --split-files ${line}; gzip ${line}*fastq"; eval ${cmd}; done
+fasterq-dump --split-files SRR8599752
+gunzip *.gz
 miR のreffernece と　annotation
 ftp://mirbase.org/pub/mirbase/CURRENT/から　1　mature.fa.gz　2　hairpin.fa.gzをdownloads
 
