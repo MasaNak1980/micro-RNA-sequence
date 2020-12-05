@@ -11,12 +11,12 @@ for sample in `ls *fastq | xargs basename -s .fastq | uniq`; do echo Remove the 
 
 ｑｆ checkしたものはqfフォルダへ
 mkdir qf 
-mv *_qf.fastq /home/mn575/project/data/mouse/MSC_mus/qf
+mv *_qf.fastq /home/mn575/project/data/mouse/macrophage/qf
 
 
 row data移動
 mkdir row
-mv *.fastq /home/mn575/project/data/mouse/MSC_mus/row
+mv *.fastq /home/mn575/project/data/mouse/macrophage/row
 
 cd qf
 
@@ -25,6 +25,7 @@ cd qf
  $flexbar -t Con2_trimed -r Con2_qf.fastq -as ATCTCGTATGCCGTCTTCTGCTT -ao 4 -m 16 -n 6
  $flexbar -t Exp1_trimed -r Exp1_qf.fastq -as ATCTCGTATGCCGTCTTCTGCTT -ao 4 -m 16 -n 6
  $flexbar -t Exp2_trimed -r Exp2_qf.fastq -as ATCTCGTATGCCGTCTTCTGCTT -ao 4 -m 16 -n 6
+ 
 
 HPC 他のmoduleはloadしない方がよい 
 module load flexbar/3.0.3-foss-2016b 
