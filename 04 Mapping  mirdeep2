@@ -35,6 +35,8 @@ cd Homo_sapiens.GRCh38.dna.primary_assembly.faのあるディレクトリで。m
 module load miniconda
 conda activate bioinfo
 bowtie-build Homo_sapiens.GRCh38.dna.primary_assembly.fa homosapiens 
+bowtie-build Mus_musculus.GRCm38.dna.primary_assembly.fa mus_musculus 
+
 
 
 $ mapper.pl Exp1_trimed.fastq -h -g hsa -e -m -s Exp1_trimed_output_fastq.collapsed -p homosapiens -t trimmed_output.fastq_vs_genome_h19.arf
