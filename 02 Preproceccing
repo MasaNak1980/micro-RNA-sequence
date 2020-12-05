@@ -22,22 +22,24 @@ mv *.fastq /home/mn575/project/data/mouse/macrophage/row
 cd qf
 
 2 Trim the 3'-adapter with flexbar.
- $flexbar -t Con1_trimed -r Con1_qf.fastq -as ATCTCGTATGCCGTCTTCTGCTT -ao 4 -m 16 -n 6
+ $flexbar -t Con_Cell1_test -r Con_Cell1.fastq -as NNNNTGGAATTCTCGGGTGCCAAGG -ao 4 -m 16 -n 6
  $flexbar -t Con2_trimed -r Con2_qf.fastq -as ATCTCGTATGCCGTCTTCTGCTT -ao 4 -m 16 -n 6
  $flexbar -t Exp1_trimed -r Exp1_qf.fastq -as ATCTCGTATGCCGTCTTCTGCTT -ao 4 -m 16 -n 6
  $flexbar -t Exp2_trimed -r Exp2_qf.fastq -as ATCTCGTATGCCGTCTTCTGCTT -ao 4 -m 16 -n 6
- 
+ 　　　　　　　　　　　　　　　　　　　　　　　　NNNNTGGAATTCTCGGGTGCCAAGG
 
-HPC 他のmoduleはloadしない方がよい 
+HPC 他のmoduleはloadしない方がよい adapterはlibraryによって異なる
 module load flexbar/3.0.3-foss-2016b 
 for sample in `ls *_qf.fastq | xargs basename -s _qf.fastq | uniq`; do echo Trim the adapter:${sample}; flexbar -t ${sample}_trimed -r ${sample}_qf.fastq -as ATCTCGTATGCCGTCTTCTGCTT -ao 4 -m 16 -n 8;done; echo finished 
+Nextflex
+for sample in `ls *_qf.fastq | xargs basename -s _qf.fastq | uniq`; do echo Trim the adapter:${sample}; flexbar -t ${sample}_trimed -r ${sample}_qf.fastq -as NNNNTGGAATTCTCGGGTGCCAAGG -ao 4 -m 16 -n 8;done; echo finished 
 
-mv *_trimed.fastq /home/mn575/project/data/mouse/MSC_mus
-cd /home/mn575/project/data/homsp/seq_mir_test
+mv *_trimed.fastq /home/mn575/project/data/mouse/macrophage
+cd /home/mn575/project/data/mouse/macrophage
 
  
 3 Get the length distribution of total reads to have an overview of the datasets. 
-  $cat Con1_trimed.fastq | awk '{if(NR%4==2) print length ($1)}' | sort -n | uniq -c >Con1_readLength.txt
+  $cat Con_Cell1_test.fastq | awk '{if(NR%4==2) print length ($1)}' | sort -n | uniq -c >Con_Cell1_test_readLength.txt
   $cat Con2_trimed.fastq | awk '{if(NR%4==2) print length ($1)}' | sort -n | uniq -c >Con2_readLength.txt
   $cat Exp1_trimed.fastq | awk '{if(NR%4==2) print length ($1)}' | sort -n | uniq -c >Exp1_readLength.txt
   $cat Exp2_trimed.fastq | awk '{if(NR%4==2) print length ($1)}' | sort -n | uniq -c >Exp2_readLength.txt
