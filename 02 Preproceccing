@@ -30,7 +30,7 @@ HPC 他のmoduleはloadしない方がよい
 module load flexbar/3.0.3-foss-2016b 
 for sample in `ls *_qf.fastq | xargs basename -s _qf.fastq | uniq`; do echo Trim the adapter:${sample}; flexbar -t ${sample}_trimed -r ${sample}_qf.fastq -as ATCTCGTATGCCGTCTTCTGCTT -ao 4 -m 16 -n 8;done; echo finished 
 
-mv *_trimed.fastq /home/mn575/project/data/homsp/seq_mir_test
+mv *_trimed.fastq /home/mn575/project/data/mouse/MSC_mus
 cd /home/mn575/project/data/homsp/seq_mir_test
 
  
