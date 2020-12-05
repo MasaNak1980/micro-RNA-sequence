@@ -36,26 +36,39 @@ module load miniconda
 conda activate bioinfo
 bowtie-build Homo_sapiens.GRCh38.dna.primary_assembly.fa homosapiens 
 bowtie-build Mus_musculus.GRCm38.dna.primary_assembly.fa mus_musculus 
-
-
+perl -plane 's/\s+.+$//' < Mus_musculus.GRCm38.dna.primary_assembly.fa > new_mg.fa
 
 $ mapper.pl Exp1_trimed.fastq -h -g hsa -e -m -s Exp1_trimed_output_fastq.collapsed -p homosapiens -t trimmed_output.fastq_vs_genome_h19.arf
-HPC
-for sample in `ls *fastq | xargs basename -s _trimed.fastq | uniq`; do echo mapping:${sample}; mapper.pl ${sample}_trimed.fastq -h -g hsa -e -j -m -s ${sample}_trimed_output_fastq.collapsed -p ../ref_miR/homosapiens -t ${sample}_trimmed_output.fastq_vs_genome_h19.arf;done; echo finished 
-$ miRDeep2.pl Exp1_trimed_output_fastq.collapsed new_hg38.fa trimmed_output.fastq_vs_genome_h19.arf new_mature.fa none new_hairpin.fa -t hsa -p
 
 HPC
 module load miniconda
 conda activate bioinfo
-for sample in `ls *fastq | xargs basename -s _trimed.fastq | uniq`; do echo miRDeep2:${sample}; miRDeep2.pl ${sample}_trimed_output_fastq.collapsed ../ref_miR/new_hg38.fa ${sample}_trimed_output.fastq_vs_genome_h19.arf ../ref_miR/new_mature.fa none ../ref_miR/new_hairpin.fa -t hsa -p;done; echo finished 
+12/5
+for sample in `ls *fastq | xargs basename -s _trimed.fastq | uniq`; do echo mapping:${sample}; mapper.pl ${sample}_trimed.fastq -h -g mmu -e -j -m -s ${sample}_trimed_output_fastq.collapsed -p ../ref/mus_musculus -t ${sample}_trimmed_output.fastq_vs_genome_h19.arf;done; echo finished 
 
+$ miRDeep2.pl Exp1_trimed_output_fastq.collapsed new_hg38.fa trimmed_output.fastq_vs_genome_h19.arf new_mature.fa none new_hairpin.fa -t hsa -p
+12/05/2020 
+miRDeep2.pl Con_Cell1_trimed_output_fastq.collapsed ../ref/new_mg.fa Con_Cell1_trimmed_output.fastq_vs_genome_h19.arf ../ref/new_mature.fa none ../ref/new_hairpin.fa -t mmu -p
+miRDeep2.pl Con_Cell1_trimed_output_fastq.collapsed ../ref/new_mg.fa Con_Cell1_trimmed_output.fastq_vs_genome_h19.arf ../ref/new_mature.fa none ../ref/new_hairpin.fa -t mmu -p
+
+
+HPC 180min/sample 
+module load miniconda
+conda activate bioinfo
+12/5/20
+for sample in `ls *fastq | xargs basename -s _trimed.fastq | uniq`; do echo miRDeep2:${sample}; miRDeep2.pl ${sample}_trimed_output_fastq.collapsed ../ref/new_mg.fa ${sample}_trimmed_output.fastq_vs_genome_h19.arf ../ref/new_mature.fa none ../ref/new_hairpin.fa -t Mouse -p;done; echo finished 
+
+vi example_job.sh 
+sbatch miR_Macro.sh
+
+12/5/20
 ☆batch
 #!/bin/bash
-#SBATCH --job-name=miRDeep2_4_samples
+#SBATCH --job-name=miRDeep2_14_samples
 #SBATCH --out="slurm-%j.out"
 #SBATCH --time=2-00:01:00
 #SBATCH --nodes=1 --ntasks=1 --cpus-per-task=1
-#SBATCH --mem-per-cpu=16G
+#SBATCH --mem-per-cpu=8G
 #SBATCH --mail-type=ALL
 
 mem_bytes=$(</sys/fs/cgroup/memory/slurm/uid_${SLURM_JOB_UID}/job_${SLURM_JOB_ID}/memory.limit_in_bytes)
@@ -67,7 +80,7 @@ echo "Job name: ${SLURM_JOB_NAME}, Job ID: ${SLURM_JOB_ID}"
 echo "  I have ${SLURM_CPUS_ON_NODE} CPUs and ${mem_gbytes}GiB of RAM on compute node $(hostname)"
 module load miniconda
 conda activate bioinfo
-for sample in `ls *fastq | xargs basename -s _trimed.fastq | uniq`; do echo miRDeep2:${sample}; miRDeep2.pl ${sample}_trimed_output_fastq.collapsed ../ref_miR/new_hg38.fa ${sample}_trimed_output.fastq_vs_genome_h19.arf ../ref_miR/new_mature.fa none ../ref_miR/new_hairpin.fa -t hsa -p;done; echo finished 
+for sample in `ls *fastq | xargs basename -s _trimed.fastq | uniq`; do echo miRDeep2:${sample}; miRDeep2.pl ${sample}_trimed_output_fastq.collapsed ../ref/new_mg.fa ${sample}_trimed_output.fastq_vs_genome_h19.arf ../ref/new_mature.fa none ../ref/new_hairpin.fa -t Mouse -p;done; echo finished 
 
 
 
@@ -81,7 +94,6 @@ Exp1_trimed_output.fastq_vs_genome_h38.arf : another output file from mapper.pl
 -p homosapiens (outputfile from bowtie-build, use the file name from here.1.ebwt)
 hg38.fa : whole human genome sequence, the file is needed to remove spaces using  $ perl -plane 's/\s+.+$//' < mature.fa > new_mature.fa
 new_mature.fa : human mature miRNA sequence (fasta format) the file is needed to remove spaces using  $ perl -plane 's/\s+.+$//' < mature.fa > new_mature.fa
-hg38.fa : whole human genome sequence, the file is needed to remove spaces using  
 mature_ptr.fa : chimp mature miRNA sequence (fasta format) →not used, none 
 hg38.fa : whole human genome sequence, the file is needed to remove spaces using  　
 new_hairpin.fa : human pre-miRNA sequence (fasta format) the file is needed to remove spaces using  $ perl -plane 's/\s+.+$//' < mature.fa > new_mature.fa
