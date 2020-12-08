@@ -1,3 +1,5 @@
+名前変更をわすれない！
+
 1 Trim the 3'-adapter with flexbar.
  $flexbar -t Con_Cell1_test -r Con_Cell1.fastq -as NNNNTGGAATTCTCGGGTGCCAAGG -ao 4 -m 16 -n 6
  $flexbar -t Con2_trimed -r Con2_qf.fastq -as ATCTCGTATGCCGTCTTCTGCTT -ao 4 -m 16 -n 6
@@ -9,9 +11,13 @@ HPC 他のmoduleはloadしない方がよい adapterはlibraryによって異な
 module load flexbar/3.0.3-foss-2016b 
 for sample in `ls *_qf.fastq | xargs basename -s _qf.fastq | uniq`; do echo Trim the adapter:${sample}; flexbar -t ${sample}_trimed -r ${sample}_qf.fastq -as ATCTCGTATGCCGTCTTCTGCTT -ao 4 -m 16 -n 8;done; echo finished 
 Nextflex
-for sample in `ls *_qf.fastq | xargs basename -s _qf.fastq | uniq`; do echo Trim the adapter:${sample}; flexbar -t ${sample}_trimed -r ${sample}_qf.fastq -as NNNNTGGAATTCTCGGGTGCCAAGG -ao 4 -m 16 -n 8;done; echo finished 
+for sample in `ls *.fastq | xargs basename -s .fastq | uniq`; do echo Trim the adapter:${sample}; flexbar -t ${sample}_trimed -r ${sample}.fastq -as NNNNTGGAATTCTCGGGTGCCAAGG -ao 4 -m 16 -n 8;done; echo finished 
 
-mv *_trimed.fastq /home/mn575/project/data/mouse/macrophage
+row data移動
+mkdir row
+mv *.fastq /home/mn575/project/data/mouse/macrophage/row
+
+mv *_trimed.fastq /home/mn575/project/data/mouse/macrophage2/trimed
 cd /home/mn575/project/data/mouse/macrophage
 
 
@@ -20,39 +26,16 @@ cd /home/mn575/project/data/mouse/macrophage
  $fastq_quality_filter -q 20 -p 95 -i Con2.fastq -o Con2_qf.fastq
  $fastq_quality_filter -q 20 -p 95 -i Exp1.fastq -o Exp1_qf.fastq
  $fastq_quality_filter -q 20 -p 95 -i Exp2.fastq -o Exp2_qf.fastq
+
 HPC
-名前変更をわすれない！
 srun -pty -c 8 --mem=100G -p interactive -t 12:00:00 bash
 module load FASTX-Toolkit/0.0.14-foss-2016b
 for sample in `ls *fastq | xargs basename -s .fastq | uniq`; do echo Remove the reads of bad quality:${sample}; fastq_quality_filter -q 20 -p 95 -i ${sample}.fastq -o ${sample}_qf.fastq;done; echo finished
-for sample in `ls *fastq | xargs basename -s .fastq | uniq`; do echo Remove the reads of bad quality:${sample}; fastq_quality_filter -q 20 -p 95 -i ${sample}.fastq -o ${sample}_qf.fastq;done; echo finished 
+for sample in `ls *_trimed.fastq | xargs basename -s _trimed.fastq | uniq`; do echo Remove the reads of bad quality:${sample}; fastq_quality_filter -q 30 -p 95 -i ${sample}_trimed.fastq -o ${sample}_qf.fastq;done; echo finished 
 
-ｑｆ checkしたものはqfフォルダへ
-mkdir qf 
-mv *_qf.fastq /home/mn575/project/data/mouse/macrophage/qf
-
-
-row data移動
-mkdir row
-mv *.fastq /home/mn575/project/data/mouse/macrophage/row
-
-cd qf
-
-2 Trim the 3'-adapter with flexbar.
- $flexbar -t Con_Cell1_test -r Con_Cell1.fastq -as NNNNTGGAATTCTCGGGTGCCAAGG -ao 4 -m 16 -n 6
- $flexbar -t Con2_trimed -r Con2_qf.fastq -as ATCTCGTATGCCGTCTTCTGCTT -ao 4 -m 16 -n 6
- $flexbar -t Exp1_trimed -r Exp1_qf.fastq -as ATCTCGTATGCCGTCTTCTGCTT -ao 4 -m 16 -n 6
- $flexbar -t Exp2_trimed -r Exp2_qf.fastq -as ATCTCGTATGCCGTCTTCTGCTT -ao 4 -m 16 -n 6
- 　　　　　　　　　　　　　　　　　　　　　　　　NNNNTGGAATTCTCGGGTGCCAAGG
-
-HPC 他のmoduleはloadしない方がよい adapterはlibraryによって異なる
-module load flexbar/3.0.3-foss-2016b 
-for sample in `ls *_qf.fastq | xargs basename -s _qf.fastq | uniq`; do echo Trim the adapter:${sample}; flexbar -t ${sample}_trimed -r ${sample}_qf.fastq -as ATCTCGTATGCCGTCTTCTGCTT -ao 4 -m 16 -n 8;done; echo finished 
-Nextflex
-for sample in `ls *_qf.fastq | xargs basename -s _qf.fastq | uniq`; do echo Trim the adapter:${sample}; flexbar -t ${sample}_trimed -r ${sample}_qf.fastq -as NNNNTGGAATTCTCGGGTGCCAAGG -ao 4 -m 16 -n 8;done; echo finished 
-
-mv *_trimed.fastq /home/mn575/project/data/mouse/macrophage
-cd /home/mn575/project/data/mouse/macrophage
+ｑｆ checkしたものはmacrophage2フォルダへ
+mv *_qf.fastq /home/mn575/project/data/mouse/macrophage2
+cd /home/mn575/project/data/mouse/macrophage2
 
  
 3 Get the length distribution of total reads to have an overview of the datasets. 
@@ -61,7 +44,7 @@ cd /home/mn575/project/data/mouse/macrophage
   $cat Exp1_trimed.fastq | awk '{if(NR%4==2) print length ($1)}' | sort -n | uniq -c >Exp1_readLength.txt
   $cat Exp2_trimed.fastq | awk '{if(NR%4==2) print length ($1)}' | sort -n | uniq -c >Exp2_readLength.txt
 HPC
-for sample in `ls *.fastq | xargs basename -s _trimed.fastq | uniq`; do echo Get the length distribution of total reads:${sample}; cat ${sample}_trimed.fastq | awk '{if(NR%4==2) print length ($1)}' | sort -n | uniq -c >${sample}_readLength.txt;done; echo finished  
+for sample in `ls *.fastq | xargs basename -s _qf.fastq | uniq`; do echo Get the length distribution of total reads:${sample}; cat ${sample}_qf.fastq | awk '{if(NR%4==2) print length ($1)}' | sort -n | uniq -c >${sample}_readLength.txt;done; echo finished  
 
 
 4 Open the Rstudio 
