@@ -43,8 +43,12 @@ $ mapper.pl Exp1_trimed.fastq -h -g hsa -e -m -s Exp1_trimed_output_fastq.collap
 HPC
 module load miniconda
 conda activate bioinfo
+11/25
+for sample in `ls *fastq | xargs basename -s _trimed.fastq | uniq`; do echo mapping:${sample}; mapper.pl ${sample}_trimed.fastq -h -g hsa -e -j -m -s ${sample}_trimed_output_fastq.collapsed -p ../ref_miR/homosapiens -t ${sample}_trimmed_output.fastq_vs_genome_h19;done; echo finished 
 12/5
 for sample in `ls *fastq | xargs basename -s _trimed.fastq | uniq`; do echo mapping:${sample}; mapper.pl ${sample}_trimed.fastq -h -g mmu -e -j -m -s ${sample}_trimed_output_fastq.collapsed -p ../ref/mus_musculus -t ${sample}_trimmed_output.fastq_vs_genome_h19.arf;done; echo finished 
+12/8
+for sample in `ls *fastq | xargs basename -s _qf.fastq | uniq`; do echo mapping:${sample}; mapper.pl ${sample}_qf.fastq -h -g mmu -e -j -m -s ${sample}_output_fastq.collapsed -p ../ref/mus_musculus -t ${sample}_output.fastq_vs_genome_h19.arf;done; echo finished 
 
 $ miRDeep2.pl Exp1_trimed_output_fastq.collapsed new_hg38.fa trimmed_output.fastq_vs_genome_h19.arf new_mature.fa none new_hairpin.fa -t hsa -p
 12/05/2020 
@@ -52,11 +56,11 @@ miRDeep2.pl Con_Cell1_trimed_output_fastq.collapsed ../ref/new_mg.fa Con_Cell1_t
 miRDeep2.pl Con_Cell1_trimed_output_fastq.collapsed ../ref/new_mg.fa Con_Cell1_trimmed_output.fastq_vs_genome_h19.arf ../ref/new_mature.fa none ../ref/new_hairpin.fa -t mmu -p
 
 
-HPC 180min/sample 
+HPC 180min/sample 14sample 23 hrs
 module load miniconda
 conda activate bioinfo
 12/5/20
-for sample in `ls *fastq | xargs basename -s _trimed.fastq | uniq`; do echo miRDeep2:${sample}; miRDeep2.pl ${sample}_trimed_output_fastq.collapsed ../ref/new_mg.fa ${sample}_trimmed_output.fastq_vs_genome_h19.arf ../ref/new_mature.fa none ../ref/new_hairpin.fa -t Mouse -p;done; echo finished 
+for sample in `ls *fastq | xargs basename -s _qf.fastq | uniq`; do echo miRDeep2:${sample}; miRDeep2.pl ${sample}_output_fastq.collapsed ../ref/new_mg.fa ${sample}_output.fastq_vs_genome_h19.arf ../ref/new_mature.fa none ../ref/new_hairpin.fa -t Mouse -p;done; echo finished 
 
 vi example_job.sh 
 sbatch miR_Macro.sh
@@ -83,6 +87,26 @@ conda activate bioinfo
 for sample in `ls *fastq | xargs basename -s _trimed.fastq | uniq`; do echo miRDeep2:${sample}; miRDeep2.pl ${sample}_trimed_output_fastq.collapsed ../ref/new_mg.fa ${sample}_trimed_output.fastq_vs_genome_h19.arf ../ref/new_mature.fa none ../ref/new_hairpin.fa -t Mouse -p;done; echo finished 
 
 
+12/8/20
+☆batch
+#!/bin/bash
+#SBATCH --job-name=miRDeep2_14_samples
+#SBATCH --out="slurm-%j.out"
+#SBATCH --time=1-08:01:00
+#SBATCH --nodes=1 --ntasks=1 --cpus-per-task=1
+#SBATCH --mem-per-cpu=8G
+#SBATCH --mail-type=ALL
+
+mem_bytes=$(</sys/fs/cgroup/memory/slurm/uid_${SLURM_JOB_UID}/job_${SLURM_JOB_ID}/memory.limit_in_bytes)
+mem_gbytes=$(( $mem_bytes / 1024 **3 ))
+
+echo "Starting at $(date)"
+echo "Job submitted to the ${SLURM_JOB_PARTITION} partition, the default partition on ${SLURM_CLUSTER_NAME}"
+echo "Job name: ${SLURM_JOB_NAME}, Job ID: ${SLURM_JOB_ID}"
+echo "  I have ${SLURM_CPUS_ON_NODE} CPUs and ${mem_gbytes}GiB of RAM on compute node $(hostname)"
+module load miniconda
+conda activate bioinfo
+for sample in `ls *fastq | xargs basename -s _qf.fastq | uniq`; do echo miRDeep2:${sample}; miRDeep2.pl ${sample}_output_fastq.collapsed ../ref/new_mg.fa ${sample}_output.fastq_vs_genome_h19.arf ../ref/new_mature.fa none ../ref/new_hairpin.fa -t Mouse -p;done; echo finished 
 
 
 
