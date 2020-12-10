@@ -49,6 +49,7 @@ for sample in `ls *fastq | xargs basename -s _trimed.fastq | uniq`; do echo mapp
 for sample in `ls *fastq | xargs basename -s _trimed.fastq | uniq`; do echo mapping:${sample}; mapper.pl ${sample}_trimed.fastq -h -g mmu -e -j -m -s ${sample}_trimed_output_fastq.collapsed -p ../ref/mus_musculus -t ${sample}_trimmed_output.fastq_vs_genome_h19.arf;done; echo finished 
 12/8
 for sample in `ls *fastq | xargs basename -s _qf.fastq | uniq`; do echo mapping:${sample}; mapper.pl ${sample}_qf.fastq -h -g mmu -e -j -m -s ${sample}_output_fastq.collapsed -p ../ref/mus_musculus -t ${sample}_output.fastq_vs_genome_h19.arf;done; echo finished 
+mapper.pl Exp5_trimed.fastq -h -g hsa -e -m -s Exp5_trimed_output_fastq.collapsed -p ../ref_miR/homosapiens -t Exp5_trimmed_output.fastq_vs_genome_h19.arf
 
 $ miRDeep2.pl Exp1_trimed_output_fastq.collapsed new_hg38.fa trimmed_output.fastq_vs_genome_h19.arf new_mature.fa none new_hairpin.fa -t hsa -p
 12/05/2020 
